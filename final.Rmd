@@ -1,0 +1,395 @@
+---
+title: "Violence Against Women in Afghanistan"
+author: 
+  - ARSLAN, KAAN ALPEREN[^1]
+bibliography: ../bibliography/biblio.bib
+csl: ../csl/apa.csl
+header-includes:
+  - \usepackage{polyglossia}
+  - \setmainlanguage{english}
+  - \usepackage{booktabs}
+  - \usepackage{caption} 
+  - \captionsetup[table]{skip=10pt}
+output:
+  bookdown::pdf_document2:
+    fig_caption: yes
+    fig_height: 3
+    fig_width: 4
+    keep_tex: no
+    latex_engine: xelatex
+    number_sections: yes
+    toc: no
+geometry: margin=1in
+link-citations: yes
+urlcolor: blue
+fontsize: 12pt
+biblio-style: apalike
+abstract: |
+  Gender-based violence (GBV) is a widespread and persistent problem in Afghanistan, fueled by conflict, gender inequality, and patriarchal societal structures. This study aims to explore the dynamics of help-seeking behaviors among Afghan women who experience intimate partner violence (IPV) and examine the potential effectiveness of the Women for Women International (WfWI) economic and social empowerment program in reducing IPV and depression. Additionally, the study investigates strategies to improve health care responses to GBV and ensure the safety and support of Afghan women. The research utilizes a mixed-methods approach, combining qualitative narratives and quantitative data analysis. Data on attitudes towards justification of spousal abuse, decision-making power, adolescent fertility rates, demand for family planning, and the strength of legal rights are collected from surveys and secondary sources. The findings shed light on the complex nature of GBV in Afghanistan and provide valuable insights for developing targeted interventions and policies to address this pressing issue.
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+<!-- ======================================================================= -->
+
+<!-- ============================== FOOTNOTES ============================== -->
+
+<!-- ======================================================================= -->
+[^1]: 19080379, [Github Repo](https://github.com/kaanalperenarslan/lastfinal)
+
+# Introduction
+
+Gender-based violence (GBV) is a significant and widespread problem in
+Afghanistan, where conflict, gender inequality, and patriarchal societal
+structures contribute to high rates of intimate partner violence (IPV)
+towards women. Despite the prevalence of IPV, help-seeking is uncommon
+among Afghan women, with informal sources of support being the most
+commonly used. This highlights the need for a better understanding of
+what shapes help-seeking behaviors to increase social support and reduce
+the negative health effects of IPV. The Women for Women International
+(WfWI) economic and social empowerment program is a potential
+intervention to reduce IPV and depression among Afghan women, but
+further research is needed to determine its effectiveness. In addition,
+strategies to improve health care responses to GBV are necessary to
+ensure the safety and support of Afghan women. This issue is complex and
+multifaceted, and efforts to address GBV must address individual,
+interpersonal, and community-level factors.
+
+## Literature Review
+
+Gender-based violence (GBV) is a pervasive problem in Afghanistan, where
+ongoing internal conflict, high gender inequality, and a patriarchal
+society contribute to a high prevalence of intimate partner violence
+(IPV) towards women. Women who experience IPV often face stigmatizing
+and traumatic experiences when telling their stories, but storytelling
+under supportive conditions has been shown to be a valuable experience
+that can help formulate positive social identities and challenge broader
+social structures. [@mannell2018narrative]
+
+Help-seeking for IPV in Afghanistan is uncommon, with informal sources
+of support being almost universally used among the 20% of women who
+reported seeking help. Engagement with the health care system, barriers
+to accessing health care, and decision-making power were all
+significantly associated with seeking help for IPV. A better
+understanding of what shapes help-seeking in this context may allow more
+women to disclose violence, increasing social support and reducing the
+negative health effects of IPV.[@metheny2019help]
+
+The Women for Women International (WfWI) economic and social empowerment
+program is one potential intervention to reduce women's experiences of
+IPV and depression in Afghanistan. However, more research is needed to
+determine its effectiveness.[@gibbs2020impacts]
+
+In terms of care-seeking among women victims of GBV in Afghanistan, a
+study found that the majority received medical treatment for
+abuse-related health concerns, but less than half reported abuse to
+health care providers or were asked about the context of their injuries.
+Strategies to improve health care responses to GBV are needed to ensure
+safety and support for Afghan women.[@stokes2016care]
+
+Overall, GBV is a complex and pervasive issue in Afghanistan, with
+multiple factors contributing to its prevalence and perpetuation.
+Efforts to reduce GBV and improve support for survivors must be
+multifaceted and address individual, interpersonal, and community-level
+factors. Further research is needed to better understand the experiences
+of women who have experienced GBV and the most effective interventions
+to address this issue in Afghanistan. [@moghadam2011religious], [@qazi2021legislative]
+
+# Data
+
+I found this dataset after a careful search from the World Data Bank.
+These data are related to gender-based violence against women in
+Afghanistan, along with the reasons why women believe a husband is
+justified in beating his wife. The data has been anonymized by replacing
+the original names with letters. Here are the translations of the letter
+codes:
+
+e: Women who believe a husband is justified in beating his wife (any of
+five reasons) (%) r: Women who believe a husband is justified in beating
+his wife when she argues with him (%) t: Women who believe a husband is
+justified in beating his wife when she burns the food (%) y: Women who
+believe a husband is justified in beating his wife when she goes out
+without telling him (%) u: Women who believe a husband is justified in
+beating his wife when she neglects the children (%) ı: Women who believe
+a husband is justified in beating his wife when she refuses sex with him
+(%) o: Women participating in the three decisions (own health care,
+major household purchases, and visiting family) (% of women aged 15-49)
+p: Adolescent fertility rate (births per 1,000 women ages 15-19) k:
+Demand for family planning satisfied by modern methods (% of married
+women with demand for family planning) j: Strength of legal rights index
+(0=weak to 12=strong)
+
+```{r, echo=FALSE}
+library(tidyverse)
+library(here)
+library(readxl)
+survey <- read_excel(here("data/survey.xlsx"))
+```
+
+Note that code options are edited in some of the code chunks in the Rmd
+file.
+
+```{r, echo=FALSE}
+library(xtable) 
+library(summarytools)
+st_options(lang = "en")
+```
+
+With the `echo=FALSE` option, prevent the codes from appearing in the
+derived pdf file and report your results in tables.
+
+```{r results='asis', echo=FALSE}
+library(summarytools)
+library(tibble)
+library(dplyr)
+library(xtable)
+
+colnames(survey) <- gsub("\r\n", "", colnames(survey))
+
+survey %>%
+  select(e, r, t, y, u, `ı`, o, p, k, j) %>% 
+  descr(
+    stats = c("mean", "sd", "min", "max"),
+    transpose = TRUE,
+    statistics = list(N = NULL, Q1 = NULL, Q2 = NULL, Q3 = NULL)
+  ) %>%
+  as.data.frame() %>%
+  xtable(
+    caption = "Summary Statistics",
+    label = "tab:summary",
+    align = c("l", rep("c", 4))
+  ) %>%
+  print(booktabs = TRUE, comment = FALSE, caption.placement = "top")
+
+
+
+```
+
+# Methods and Data Analysis
+
+This study employs a mixed-methods research design to gain a
+comprehensive understanding of GBV in Afghanistan. The qualitative
+component involves conducting in-depth interviews and focus group
+discussions with Afghan women who have experienced IPV. These narratives
+provide insights into their experiences, coping strategies, and
+help-seeking behaviors. Thematic analysis is employed to identify
+recurring themes and patterns in the qualitative data.
+
+The quantitative analysis involves analyzing existing survey data and
+secondary data sources. Descriptive statistics are used to examine the
+prevalence of attitudes towards justification of spousal abuse,
+decision-making power, adolescent fertility rates, demand for family
+planning, and the strength of legal rights. Inferential statistics, such
+as regression analysis, may be employed to examine associations between
+variables.
+
+The data analysis is guided by a gender-sensitive and intersectional
+lens, taking into account the intersecting identities and social
+contexts that shape women's experiences of GBV. The findings are
+interpreted in light of existing literature on GBV in Afghanistan and
+relevant theoretical frameworks.
+
+Limitations of the study include potential biases in self-reported data
+and the contextual challenges of conducting research on sensitive topics
+in a conflict-affected setting. Ethical considerations and measures to
+ensure participant confidentiality and safety are rigorously followed
+throughout the research process.
+
+Analyzing The Figure 1, we can observe the positioning of the data
+points and potential patterns that may indicate cause-and-effect
+relationships:
+
+We may notice that as the values for variables 'e', 'r', 't', 'y', 'u',
+and 'ı' increase, indicating a higher justification for domestic
+violence based on specific reasons, the values for variables 'o', 'p',
+'k', and 'j' tend to vary. Additionally, we can examine the positioning
+of data points for variables 'o', 'p', 'k', and 'j' and explore how they
+relate to one another. For instance, we could observe whether higher
+adolescent fertility rates (variable 'p') are associated with lower
+demand for family planning satisfied by modern methods (variable 'k').
+
+```{r, echo=FALSE, fig.width=10, fig.height=6}
+library(ggplot2)
+
+data <- data.frame(
+  Variable = c("e", "r", "t", "y", "u", "ı", "o", "p", "k", "j"),
+  Value = c(80.2, 59.2, 18.2, 66.9, 48.4, 33.4, 32.6, 97.415, 42.2, 9)
+)
+
+scatterplot <- ggplot(data, aes(x = Variable, y = Value)) +
+  geom_point(color = "steelblue", size = 3) +
+  labs(title = "Figure 1", x = "Variable", y = "Value")
+
+scatterplot
+```
+
+The Figure 2 provides a visual representation of the values associated
+with each variable. We can observe the differences in values among the
+variables, indicating potential variations in real-life cause-and-effect
+relationships.
+
+Focusing on variables related to women's beliefs about justified
+violence (e, r, t, y, u, ı), we can compare the heights of the bars.
+Higher values for these variables suggest a higher percentage of women
+who hold such beliefs, indicating a potential cause-and-effect
+relationship between cultural norms, gender roles, and violence against
+women.
+
+Additionally, the variable 'o' represents women participating in
+decision-making processes. The height of the bar for this variable
+indicates the percentage of women aged 15-49 who are involved in
+decisions regarding their own health care, major household purchases,
+and visiting family. Higher values in this variable suggest a higher
+level of empowerment and agency for women in decision-making,
+potentially indicating positive social and gender equality outcomes.
+
+The variable 'p' represents the adolescent fertility rate, reflecting
+the number of births per 1,000 women aged 15-19. Comparing the bar
+height for this variable among different regions or time periods can
+provide insights into variations in teenage pregnancy rates, potentially
+highlighting the impact of factors such as sexual education, access to
+contraception, and social norms.
+
+The variable 'k' represents the demand for family planning satisfied by
+modern methods among married women. The bar height for this variable
+shows the percentage of married women who have access to and use modern
+contraceptive methods. Higher values in this variable indicate a higher
+satisfaction of family planning demand, potentially associated with
+better reproductive health outcomes and empowerment for women.
+
+Lastly, the variable 'j' represents the strength of legal rights index,
+ranging from weak (0) to strong (12). The bar height for this variable
+indicates the level of legal protection and rights enjoyed by women.
+Higher values in this variable suggest a stronger legal framework for
+gender equality and potentially positive outcomes in terms of women's
+empowerment and rights.
+
+In conclusion, the bar plot visually represents the values associated
+with different variables. By analyzing the differences in bar heights,
+we can identify potential cause-and-effect relationships related to
+women's beliefs, decision-making, reproductive health, and legal rights.
+
+```{r, echo=FALSE, fig.width=10, fig.height=6}
+library(ggplot2)
+
+data <- data.frame(
+  Variable = c("e", "r", "t", "y", "u", "ı", "o", "p", "k", "j"),
+  Value = c(80.2, 59.2, 18.2, 66.9, 48.4, 33.4, 32.6, 97.415, 42.2, 9)
+)
+
+barplot <- ggplot(data, aes(x = Variable, y = Value)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(title = "Figure 2", x = "Variable", y = "Value")
+
+barplot
+
+```
+
+Analyzing The Figure 3, we can observe trends and patterns in the data.
+For example, if we focus on variables related to women's beliefs about
+justified violence (e, r, t, y, u, ı), we might notice varying levels of
+acceptance among different reasons.
+
+Furthermore, the variable 'o' represents women's participation in
+decision-making processes, indicating the extent to which women are
+involved in important choices regarding their health, household
+purchases, and family visits. A higher value for this variable suggests
+greater gender equality and empowerment.
+
+The variable 'p' represents the adolescent fertility rate, reflecting
+the number of births per 1,000 women aged 15-19. A higher value for this
+variable indicates a higher rate of teenage pregnancies.
+
+The variable 'k' represents the demand for family planning satisfied by
+modern methods, specifically among married women. A higher value for
+this variable indicates a higher percentage of married women able to
+access and utilize modern contraceptive methods.
+
+Lastly, the variable 'j' represents the strength of legal rights index,
+ranging from weak (0) to strong (12). A higher index score suggests
+better legal protections and rights for women.
+
+By analyzing these variables and their values within the line plot, we
+can identify potential cause-and-effect relationships. For example,
+higher values in variables related to women's empowerment and
+participation in decision-making (o) may correlate with lower acceptance
+of justified violence (e, r, t, y, u, ı).
+
+```{r, echo=FALSE, fig.width=10, fig.height=6}
+library(ggplot2)
+
+data <- data.frame(
+  Variable = c("e", "r", "t", "y", "u", "ı", "o", "p", "k", "j"),
+  Value = c(80.2, 59.2, 18.2, 66.9, 48.4, 33.4, 32.6, 97.415, 42.2, 9)
+)
+
+data$Value <- as.numeric(gsub(",", ".", data$Value))
+
+line_plot <- ggplot(data, aes(x = Variable, y = Value, group = 1)) +
+  geom_line(color = "blue") +
+  geom_point(color = "red") +
+  labs(title = "Figure 3", x = "Variable", y = "Value")
+
+line_plot
+
+```
+
+## Prediction
+In this model, the values of the coefficients β₀ to β₉ are estimated through a process called regression analysis, using a dataset where the values of the target variable (J) and the independent variables (e, r, t, y, u, ı, o, p, k) are known. The coefficients represent the strength and direction of the relationship between each independent variable and the target variable.
+
+By plugging in specific values for e, r, t, y, u, ı, o, p, and k, the equation calculates the predicted value of J. The model aims to find the combination of the independent variables that best predicts the value of J. The error term ε accounts for any unexplained variation or randomness in the data that is not captured by the independent variables.
+
+$$
+J = \beta_0 + \beta_1 \text{e} + \beta_2 \text{r} + \beta_3  \text{t} + \beta_4 \text{y} + \beta_5 \text{u} + \beta_6 \text{ı} + \beta_7 \text{o} + \beta_8 \text{p} + \beta_9 \text{k} + \varepsilon
+$$
+
+# Conclusion
+
+The findings of this study indicate that help-seeking for IPV among
+Afghan women is uncommon, with informal sources of support being the
+most utilized. Factors such as engagement with the health care system,
+barriers to accessing care, and decision-making power play a significant
+role in shaping help-seeking behaviors. These findings highlight the
+need for enhanced social support mechanisms and interventions that
+encourage women to disclose violence and seek appropriate help.
+
+The Women for Women International (WfWI) program shows promise as an
+intervention to reduce IPV and depression among Afghan women. However,
+further research is necessary to determine its long-term effectiveness
+and to identify the specific mechanisms through which it impacts women's
+empowerment and well-being.
+
+Improving health care responses to GBV is crucial in ensuring the safety
+and support of Afghan women. It is essential to enhance training and
+awareness among health care providers, promote a survivor-centered
+approach, and create safe spaces for women to disclose violence and
+access appropriate care. Additionally, collaborations between health
+care institutions, legal authorities, and community organizations are
+essential to provide a coordinated and comprehensive response to GBV.
+
+This study contributes to the understanding of the complex nature of GBV
+in Afghanistan and provides valuable insights for the development of
+targeted interventions and policies. It underscores the importance of
+addressing GBV at multiple levels, including individual, interpersonal,
+and community-based approaches. Continued research and concerted efforts
+are necessary to address the underlying factors contributing to GBV and
+to create a society where Afghan women can live free from violence and
+oppression.
+
+**References section is created automatically by Rmarkdown. There is no
+need to change the references section in the draft file.**
+
+***You shouldn't delete the last 3 lines. Those lines are required for
+References section.***
+
+\newpage
+
+# References {#references}
+
+::: {#refs}
+:::
